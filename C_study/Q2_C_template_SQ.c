@@ -32,27 +32,27 @@ typedef struct _stack
 ///////////////////////// function prototypes ////////////////////////////////////
 
 // You should not change the prototypes of these functions
-void createStackFromLinkedList(LinkedList *ll , Stack *stack){
-	ListNode *header;
-	header = ll -> head;
-	while(header != NULL){
-		push(stack, header -> item);
-		header = header -> next;
-	}
-}
+// void createStackFromLinkedList(LinkedList *ll , Stack *stack){
+// 	ListNode *header;
+// 	header = ll -> head;
+// 	while(header != NULL){
+// 		push(stack, header -> item);
+// 		header = header -> next;
+// 	}
+// }
 
-void removeEvenValues(Stack *s){
-	Stack tempp;
-	int i,p;
-	int fixsize = s -> ll.size;
-	int fixsizeoftemp;
-	for(i = 0; i < fixsize; i++){
-		p = pop(s);
-		if(p % 2 != 0){
-			push(&tempp, p);
-		}
-	}
-}
+// void removeEvenValues(Stack *s){
+// 	Stack tempp;
+// 	int i,p;
+// 	int fixsize = s -> ll.size;
+// 	int fixsizeoftemp;
+// 	for(i = 0; i < fixsize; i++){
+// 		p = pop(s);
+// 		if(p % 2 != 0){
+// 			push(&tempp, p);
+// 		}
+// 	}
+// }
 
 void push(Stack *s , int item);
 int pop(Stack *s);
@@ -132,12 +132,28 @@ int main()
 
 void createStackFromLinkedList(LinkedList *ll, Stack *s)
 {
-    /* add your code here */
+    ListNode * header = ll -> head;
+	while (header != NULL){
+		push(s, header -> item);
+		header = header -> next;
+	}
 }
 
 void removeEvenValues(Stack *s)
 {
-	/* add your code here */
+	Stack stack;
+	int i,p;
+	int fixsize = s -> ll.size;
+	for (i = 0; i < s->ll.size ; i++){
+		p = pop(s);
+		if (p % 2 == 1 || p % 2 == -1){
+			push(&stack , p);
+		}
+	}
+	for (i = 0; i < stack.ll.size ; i++){
+		p = pop(&stack);
+		push(s,p);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////
