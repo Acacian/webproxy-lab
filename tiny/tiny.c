@@ -79,13 +79,13 @@ void doit(int fd) {
         return;
     }
 
-    serve_static(fd, filename, sbuf.st_size, method);
+    serve_static(fd, filename, sbuf.st_size);
   } else { 
     if (!(S_ISREG(sbuf.st_mode)) || !(S_IXUSR & sbuf.st_mode)) {
         clienterror(fd, filename, "403", "Forbidden", "Tiny couldn't run the CGI program");
         return;
     }
-    serve_dynamic(fd, filename, cgiargs, method);
+    serve_dynamic(fd, filename, cgiargs);
   }
 }
 
@@ -125,7 +125,7 @@ int parse_uri(char *uri, char *filename, char *cgiargs) {
   }
 }
 
-void serve_dynamic(int fd, char *filename, char *cgiargs, char *method) {
+void serve_dynamic(int fd, char *filename, char *cgiargs) {
   char buf[MAXLINE], *emptylist[] = {NULL};
   /* Return first part of HTTP response*/
   sprintf(buf, "HTTP/1.0 200 OK\r\n");
@@ -136,8 +136,6 @@ void serve_dynamic(int fd, char *filename, char *cgiargs, char *method) {
   //클라이언트는 성공을 알려주는 응답라인을 보내는 것으로 시작한다.
   if (Fork() == 0) { //타이니는 자식프로세스를 포크하고 동적 컨텐츠를 제공한다.
     setenv("QUERY_STRING", cgiargs, 1);
-    setenv("REQUEST_METHOD", method, 1);    // REQUEST_METHOD: GET or POST
-
     //자식은 QUERY_STRING 환경변수를 요청 uri의 cgi인자로 초기화 한다.  (15000 & 213)
     Dup2(fd, STDOUT_FILENO); //자식은 자식의 표준 출력을 연결 파일 식별자로 재지정하고,
 
@@ -171,3 +169,15 @@ void serve_static(int fd, char *filename, int filesize) {
   Munmap(srcp, filesize); //메모리 해제
 }
 
+void get_filetype(char *filename, char *filetype) {
+  if (strstr(filename, ".html")) {
+    strcpy(filetype, "text/html");
+  } else if (strstr(filename, ".gif")) {
+    strcpy(filetype, "image/gif");
+  } else if (strstr(filename, ".png")) {
+    strcpy(filetype, "image/png");
+  } else if (strstr(filename, ".jpg")) {
+    strcpy(filetype, "image/jpeg");
+  } else {
+    strcpy(filetype, "text/plain");
+  }
