@@ -163,10 +163,14 @@ void serve_static(int fd, char *filename, int filesize) {
   printf("%s", buf);
 
   srcfd = Open(filename, O_RDONLY, 0);
-  srcp = Mmap(0,filesize,PROT_READ,MAP_PRIVATE,srcfd,0);
+  srcp = (char * )malloc(filesize);
+  Rio_readn(srcfd, srcp, filesize);
+  // srcp = Mmap(0,filesize,PROT_READ,MAP_PRIVATE,srcfd,0);
   Close(srcfd); // 닫기
   Rio_writen(fd, srcp, filesize);
-  Munmap(srcp, filesize); //메모리 해제
+  free(srcp);
+  srcp = NULL;
+  // Munmap(srcp, filesize); //메모리 해제
 }
 
 void get_filetype(char *filename, char *filetype) {
@@ -178,6 +182,8 @@ void get_filetype(char *filename, char *filetype) {
     strcpy(filetype, "image/png");
   } else if (strstr(filename, ".jpg")) {
     strcpy(filetype, "image/jpeg");
+  } else if (strstr(filename, ".mp4")) {
+    strcpy(filetype, "video/mp4");
   } else {
     strcpy(filetype, "text/plain");
   }
