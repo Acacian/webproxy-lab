@@ -277,11 +277,13 @@ int read_and_forward_response(int server_fd, int client_fd,
 	Rio_readinitb(&rio_server, server_fd);
 	
 	do {
-		if(Rio_readlineb(&rio_server, tmp_str, MAXBUF) == -1)
+		if(Rio_readlineb(&rio_server, tmp_str, MAXBUF) == -1) // 읽고 에러 뜨면 -1
 			return -1;
 		
 		if(valid_size)
 			valid_size = append(content, tmp_str, strlen(tmp_str), &cache_size);
+			// strcat을 했는데 작동이 안되어서
+			// 0에서 끝점까지 계속 더해주는것
 			
 		if (strstr(tmp_str, "Content-length")) 
 			sscanf(tmp_str, "Content-length: %d", &size);
